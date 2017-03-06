@@ -1,0 +1,22 @@
+{
+  "name": "oil_project",
+  "version": "1.0.0",
+  "description": "This project is intended to monitor oil prices and possibly monitor the oil level of an oil tank",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KevinGage/OilProject.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KevinGage/OilProject/issues"
+  },
+  "homepage": "https://github.com/KevinGage/OilProject#readme",
+  "dependencies": {
+    "request": "^2.80.0"
+  }
+}
