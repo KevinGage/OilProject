@@ -22,8 +22,13 @@ request.post(
     function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var responseBodyString = JSON.stringify(response);
-            var priceSubstring = responseBodyString.substring(responseBodyString.indexOf('<span class=\\"price\\">')+23,responseBodyString.indexOf('<span class=\\"price\\">')+28);
-            console.log(priceSubstring);
+			var indexOfPrice = responseBodyString.indexOf('<span class=\\"price\\">');
+			if (indexOfPrice > 0) {
+				var priceSubstring = responseBodyString.substring(indexOfPrice+23,indexOfPrice+28);
+				console.log(priceSubstring);
+			} else {
+				console.log('Price not succesfully received from website.');
+			}
         }
     }
 );
