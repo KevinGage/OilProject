@@ -13,7 +13,7 @@ checkIfSudo ()
 collectInformation ()
 {
 	clear
-	echo "Enter SMTP server address:"
+	echo "Enter SMTP server name or IP address:"
 	read smtpAddress
 	clear
 	echo "Enter SMTP server port:"
