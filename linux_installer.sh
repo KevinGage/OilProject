@@ -61,7 +61,8 @@ collectInformation ()
 
 createServiceAccount ()
 {
-	useradd -r -s /bin/false OilService
+	useradd OilService -r -s /bin/false
+	usermod -a -G OilService OilService
 }
 
 createConfigFile ()
