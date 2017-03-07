@@ -13,7 +13,7 @@ checkIfSudo ()
 collectInformation ()
 {
 	clear
-	echo "Enter SMTP server address:"
+	echo "Enter SMTP server name or IP address:"
 	read smtpAddress
 	clear
 	echo "Enter SMTP server port:"
@@ -31,7 +31,7 @@ collectInformation ()
 	echo "Enter the email address where you would like to receive notificaitons:"
 	read recipientAddress
 	clear
-	echo "Enter a price.  When the oil price is equal or below this price an email wil be generated:"
+	echo "Enter a price.  When the oil price is equal or below this price an email wil be generated. Example 1.99:"
 	read priceThreshold
 	clear
 	echo "How often would you like the price to be checked?  Enter 1 for daily, 2 for weekly, 3 for monthly:"
@@ -41,15 +41,15 @@ collectInformation ()
 	read checkTime
 	clear
 	
-	echo "SMTP server address: $smtpAddress"
-	echo "SMTP server port: $smtpPort"
-	echo "SMTP TLS: $smtpTLS"
-	echo "Sender email: $senderAddress"
-	echo "Sender password: $senderPassword"
-	echo "Recipient email: $recipientAddress"
-	echo "Price thrshold: $priceThreshold"
-	echo "OccuranceCode (1: daily, 2 weekly, 3 monthly): $occuranceCode"
-	echo "Schedule time of day: $checkTime"
+	echo "SMTP server address: \"$smtpAddress\""
+	echo "SMTP server port: \"$smtpPort\""
+	echo "SMTP TLS: \"$smtpTLS\""
+	echo "Sender email: \"$senderAddress\""
+	echo "Sender password: \"$senderPassword\""
+	echo "Recipient email: \"$recipientAddress\""
+	echo "Price thrshold: \"$priceThreshold\""
+	echo "OccuranceCode (1: daily, 2 weekly, 3 monthly): \"$occuranceCode\""
+	echo "Schedule time of day: \"$checkTime\""
 
 	read -p "Type y if everything looks correct." yn
     		case $yn in
@@ -61,7 +61,8 @@ collectInformation ()
 
 createServiceAccount ()
 {
-	useradd -r -s /bin/false OilService
+	useradd OilService -r -s /bin/false
+	usermod -a -G OilService OilService
 }
 
 createConfigFile ()
