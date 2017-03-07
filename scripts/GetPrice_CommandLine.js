@@ -27,7 +27,12 @@ request.post(
 				var priceSubstring = responseBodyString.substring(indexOfPrice+23,indexOfPrice+28);
 				console.log(priceSubstring);
 			} else {
-				console.log('Price not succesfully received from website.');
+				var zipNotServiced = responseBodyString.indexOf('We are not currently servicing zip code ');
+				if (zipNotServiced > 0) {
+					console.log('Your zipcode is not serviced.');
+				} else {
+					console.log('Price not succesfully received from website.');
+				}
 			}
         }
     }
