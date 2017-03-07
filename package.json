@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/KevinGage/OilProject#readme",
   "dependencies": {
+    "nodemailer": "^3.1.4",
     "request": "^2.80.0"
   }
 }
