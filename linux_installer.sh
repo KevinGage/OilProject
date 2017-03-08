@@ -58,6 +58,9 @@ collectInformation ()
 	echo "Enter the email address used to send notifications:"
 	read senderAddress
 	clear
+	echo "Enter the username for the senders email address.  In most systems this is just the same as the sender email address:"
+	read senderUsername
+	clear
 	echo "Enter the password for the email address used to send notifications:"
 	read senderPassword
 	clear
@@ -78,6 +81,7 @@ collectInformation ()
 	echo "SMTP server port: $smtpPort"
 	echo "SMTP TLS: $smtpTLS"
 	echo "Sender email: $senderAddress"
+	echo "Sender username: $senderUsername"
 	echo "Sender password: $senderPassword"
 	echo "Recipient email: $recipientAddress"
 	echo "Price thrshold: $priceThreshold"
@@ -111,8 +115,16 @@ createConfigFile ()
 	echo "module.exports = {" > ./config.js
 	echo "	\"smtpAddress\": \"$smtpAddress\"," >> ./config.js
 	echo "	\"smtpPort\": $smtpPort," >> ./config.js
-	echo "	\"smtpTLS\": \"$smtpTLS\"," >> ./config.js
+
+	if [ $smtpTLS == "y" ]
+        then
+        	echo "	\"smtpTLS\": true," >> ./config.js
+	else
+                echo "	\"smtpTLS\": false," >> ./config.js
+        fi
+	
 	echo "	\"senderAddress\": \"$senderAddress\"," >> ./config.js
+	echo "	\"senderUsername\": \"$senderUsername\"," >> ./config.js
 	echo "	\"senderPassword\": \"$senderPassword\"," >> ./config.js
 	echo "	\"recipientAddress\": \"$recipientAddress\"," >> ./config.js
 	echo "	\"priceThreshold\": $priceThreshold" >> ./config.js
