@@ -17,7 +17,7 @@ checkPrerequisites ()
 	command -v apt-get >/dev/null 2>&1 || { echo >&2 "apt-get was not able to run.  Are you using debian/ubuntu? Aborting."; exit 1; }
 	
 	#Make sure node and npm are installed.  If not this should ask if you want to install.
-	if [ command -v node >/dev/null 2>&1 ]
+	if ! type node > /dev/null;
 	then
 		clear
 		read -p "Node is not installed.  Would you like this script to install it for you?" yn
@@ -28,10 +28,11 @@ checkPrerequisites ()
 	        esac
 	fi
 
-	command -v npm >/dev/null 2>&1 || { echo >&2 "Npm is not installed.  Please install the npm package and run setup again.  https://nodejs.org/en/download/package-manager/  Aborting."; exit 1; }
-
 	#Make sure node is at least version 6
 	[[ $(node -v) =~ "v6." ]] || { echo >&2 "Node must be at least version 6.  Please update to a newer version of node and try again.  https://nodejs.org/en/download/package-manager/  Aborting."; exit 1; }	
+	
+	command -v npm >/dev/null 2>&1 || { echo >&2 "Npm is not installed.  Please install the npm package and run setup again.  https://nodejs.org/en/download/package-manager/  Aborting."; exit 1; }
+
 }
 
 
