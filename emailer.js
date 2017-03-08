@@ -1,3 +1,10 @@
+/******************
+This script exports a function called sendMessage.  It takes a message subject, a message body, and a callback function.
+All SMTP info is collected from a properly formed config json object, which is required
+When the script completes it triggers the callback with the message response and or an error message.
+callback(message, error)
+******************/
+
 'use strict';
 const nodemailer = require('nodemailer');
 const config = require('./config.js');
