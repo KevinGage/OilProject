@@ -65,6 +65,11 @@ collectInformation ()
 	esac
 }
 
+installPackages ()
+{
+	npm install
+}
+
 createServiceAccount ()
 {
 	useradd OilService -r -s /bin/false
@@ -87,5 +92,6 @@ createConfigFile ()
 checkIfSudo
 checkPrerequisites
 collectInformation
+installPackages
 createServiceAccount
 createConfigFile
