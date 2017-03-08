@@ -76,6 +76,10 @@ collectInformation ()
 	echo "Enter the time of day to run the price check in 24 hour format.  Example 13:20"
 	read checkTime
 	clear
+	echo "Enter your zip code"
+        read zipCode
+        clear
+
 	
 	echo "SMTP server address: $smtpAddress"
 	echo "SMTP server port: $smtpPort"
@@ -87,6 +91,7 @@ collectInformation ()
 	echo "Price thrshold: $priceThreshold"
 	echo "OccuranceCode (1: daily, 2 weekly, 3 monthly): $occuranceCode"
 	echo "Schedule time of day: $checkTime"
+	echo "Zip code: $zipCode"
 
 	read -p "Type y if everything looks correct." yn
     		case $yn in
@@ -127,7 +132,8 @@ createConfigFile ()
 	echo "	\"senderUsername\": \"$senderUsername\"," >> ./config.js
 	echo "	\"senderPassword\": \"$senderPassword\"," >> ./config.js
 	echo "	\"recipientAddress\": \"$recipientAddress\"," >> ./config.js
-	echo "	\"priceThreshold\": $priceThreshold" >> ./config.js
+	echo "	\"priceThreshold\": $priceThreshold," >> ./config.js
+	echo "	\"zipCode\": \"$zipCode\"" >> ./config.js
 	echo "}" >> ./config.js
 }
 
