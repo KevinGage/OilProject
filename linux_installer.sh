@@ -35,7 +35,6 @@ checkPrerequisites ()
 
 }
 
-
 installNode6 ()
 {
 	#This installs node 6 using apt https://nodejs.org/en/download/package-manager/
@@ -102,12 +101,6 @@ collectInformation ()
 	esac
 }
 
-installPackages ()
-{
-	#This installs the required npm packages
-	npm install
-}
-
 createServiceAccount ()
 {
 	#This creates a service account for the script to run as.  The config file holds sensitive info so it should only be readable by this account.
@@ -115,32 +108,89 @@ createServiceAccount ()
 	usermod -a -G OilService OilService
 }
 
+createProgramDirectory ()
+{
+	#This function creates the programs install directory in /opt.  Then is secures the directory so only the service account and root can access it.
+	mkdir /opt/OilPriceChecker
+	chown OilService:OilService /opt/OilPriceChecker/
+	chmod 770 /opt/OilPriceChecker/
+}
+
 createConfigFile ()
 {
 	#This writes the config file.  It does not currently set the correct permissions.
-	echo "module.exports = {" > ./config.js
-	echo "	\"smtpAddress\": \"$smtpAddress\"," >> ./config.js
-	echo "	\"smtpPort\": $smtpPort," >> ./config.js
+	echo "module.exports = {" > /opt/OilPriceChecker/config.js
+	echo "	\"smtpAddress\": \"$smtpAddress\"," >> /opt/OilPriceChecker/config.js
+	echo "	\"smtpPort\": $smtpPort," >> /opt/OilPriceChecker/config.js
 
 	if [ $smtpTLS == "y" ]
         then
-        	echo "	\"smtpTLS\": true," >> ./config.js
+        	echo "	\"smtpTLS\": true," >> /opt/OilPriceChecker/config.js
 	else
-                echo "	\"smtpTLS\": false," >> ./config.js
+                echo "	\"smtpTLS\": false," >> /opt/OilPriceChecker/config.js
         fi
 	
-	echo "	\"senderAddress\": \"$senderAddress\"," >> ./config.js
-	echo "	\"senderUsername\": \"$senderUsername\"," >> ./config.js
-	echo "	\"senderPassword\": \"$senderPassword\"," >> ./config.js
-	echo "	\"recipientAddress\": \"$recipientAddress\"," >> ./config.js
-	echo "	\"priceThreshold\": $priceThreshold," >> ./config.js
-	echo "	\"zipCode\": \"$zipCode\"" >> ./config.js
-	echo "}" >> ./config.js
+	echo "	\"senderAddress\": \"$senderAddress\"," >> /opt/OilPriceChecker/config.js
+	echo "	\"senderUsername\": \"$senderUsername\"," >> /opt/OilPriceChecker/config.js
+	echo "	\"senderPassword\": \"$senderPassword\"," >> /opt/OilPriceChecker/config.js
+	echo "	\"recipientAddress\": \"$recipientAddress\"," >> /opt/OilPriceChecker/config.js
+	echo "	\"priceThreshold\": $priceThreshold," >> /opt/OilPriceChecker/config.js
+	echo "	\"zipCode\": \"$zipCode\"" >> /opt/OilPriceChecker/config.js
+	echo "}" >> /opt/OilPriceChecker/config.js
 }
+
+copyProgramFilesToDirectory ()
+{
+	#This just copies the script files to the programs directory
+	cp ./* /opt/OilPriceChecker/
+}
+
+installPackages ()
+{
+	#This installs the required npm packages
+	cd /opt/OilPriceChecker/ && npm install
+}
+
+createCronJob ()
+{
+	#This sets up a cron job to schedule the check of oil pricing.  if an invalid recurrance code is provided it sets up a daily job.
+	echo "#" > /etc/cron.d/OilPriceChecker
+	echo "# cron.d/OilPriceChecker -- schedules periodic check of oil prices" >> /etc/cron.d/OilPriceChecker
+	echo "#" >> /etc/cron.d/OilPriceChecker
+	echo "" >> /etc/cron.d/OilPriceChecker
+
+	IFS=':'	read -r -a timeOfDayArray <<< "$checkTime"
+
+	echo "${timeOfDayArray[0]}"
+	echo "${timeOfDayArray[1]}"
+
+	case "$occuranceCode" in
+	"1")
+		echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} * * * OilService node /opt/OilPriceChecker/get_price.js >/dev/null 2>&1" >> /etc/cron.d/OilPriceChecker
+		;;
+	"2")
+		echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} * * 6 OilService node /opt/OilPriceChecker/get_price.js >/dev/null 2>&1" >> /etc/cron.d/OilPriceChecker
+		;;
+	"3")
+		echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} 1 * * OilService node /opt/OilPriceChecker/get_price.js >/dev/null 2>&1" >> /etc/cron.d/OilPriceChecker
+		;;
+	*)
+		echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} * * * OilService node /opt/OilPriceChecker/get_price.js >/dev/null 2>&1" >> /etc/cron.d/OilPriceChecker
+		;;
+	esac
+}
+
+
 
 checkIfSudo
 checkPrerequisites
-installPackages
 collectInformation
-createConfigFile
+#test email connection.  need to add method to email.js
 createServiceAccount
+createProgramDirectory
+createConfigFile
+copyProgramFilesToDirectory
+installPackages
+createCronJob
+#create cron job for monthy email
+#send initial email
