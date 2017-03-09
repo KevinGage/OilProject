@@ -33,6 +33,7 @@ checkPrerequisites ()
 	
 	command -v npm >/dev/null 2>&1 || { echo >&2 "Npm is not installed.  Please install the npm package and run setup again.  https://nodejs.org/en/download/package-manager/  Aborting."; exit 1; }
 
+	npm install
 }
 
 installNode6 ()
@@ -201,7 +202,14 @@ createCronJob ()
 	esac
 }
 
-
+installComplete ()
+{
+	clear
+	echo "Install complete."
+	echo "To edit the schedule modify this cron job.  /etc/cron.d/OilPriceChecker"
+	echo "To edit any other settings modify this json file.  /opt/OilPriceChecker/config.js"
+	echo "You can delete any files in the current directory.  All of the required program files are in /opt/OilPriceChecker."
+}
 
 checkIfSudo
 checkPrerequisites
@@ -215,4 +223,4 @@ installPackages
 createCronJob
 #create cron job for monthy email
 #send initial email
-#Confirm installation with a message
+installComplete()
