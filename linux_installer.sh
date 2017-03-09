@@ -101,6 +101,28 @@ collectInformation ()
 	esac
 }
 
+verifyInformation ()
+{
+	#This function should attempt to verify the supplied smtp information before completing the install.
+	if [ $smtpTLS == "y" ]
+        then
+		verified="$(node ./test_email_connection.js $smtpAddress $smtpPort true $senderUsername $senderPassword)" 
+        else
+        	verified="$(node ./test_email_connection.js $smtpAddress $smtpPort false $senderUsername $senderPassword)"
+	fi
+
+	if [ $verified == "success" ]
+	then
+		clear
+		echo "SMTP settings confirmed.  Press enter to continue."
+		read
+	else
+		clear
+		echo "SMTP connection failed.  Install aborting.  Error: $verified"
+		exit 1
+	fi
+}
+
 createServiceAccount ()
 {
 	#This creates a service account for the script to run as.  The config file holds sensitive info so it should only be readable by this account.
@@ -184,7 +206,7 @@ createCronJob ()
 checkIfSudo
 checkPrerequisites
 collectInformation
-#test email connection.  need to add method to email.js
+verifyInformation
 createServiceAccount
 createProgramDirectory
 createConfigFile
