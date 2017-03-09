@@ -141,8 +141,10 @@ createConfigFile ()
 
 copyProgramFilesToDirectory ()
 {
-	#This just copies the script files to the programs directory
+	#This just copies the script files to the programs directory.  Then it sets permissions on the files
 	cp ./* /opt/OilPriceChecker/
+	sudo chown -R OilService:OilService /opt/OilPriceChecker/
+	sudo chmod -R 770 /opt/OilPriceChecker/
 }
 
 installPackages ()
@@ -160,9 +162,6 @@ createCronJob ()
 	echo "" >> /etc/cron.d/OilPriceChecker
 
 	IFS=':'	read -r -a timeOfDayArray <<< "$checkTime"
-
-	echo "${timeOfDayArray[0]}"
-	echo "${timeOfDayArray[1]}"
 
 	case "$occuranceCode" in
 	"1")
@@ -194,3 +193,4 @@ installPackages
 createCronJob
 #create cron job for monthy email
 #send initial email
+#Confirm installation with a message
