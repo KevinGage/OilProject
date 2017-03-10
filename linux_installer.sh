@@ -74,6 +74,7 @@ collectInformation ()
 	echo "How often would you like the price to be checked?  Enter 1 for daily, 2 for weekly, 3 for monthly:"
 	read occuranceCode
 	clear
+	echo "The current time on this machine is $(date)"
 	echo "Enter the time of day to run the price check in 24 hour format.  Example 13:20"
 	read checkTime
 	clear
@@ -209,6 +210,13 @@ installComplete ()
 	echo "To edit the schedule modify this cron job.  /etc/cron.d/OilPriceChecker"
 	echo "To edit any other settings modify this json file.  /opt/OilPriceChecker/config.js"
 	echo "You can delete any files in the current directory.  All of the required program files are in /opt/OilPriceChecker."
+	
+	read -p "On some systems you must reboot for the program to begin working.  Do you want to reboot now?" yn
+                case $yn in
+                        [Yy]* ) shutdown -r now;;
+                        [Nn]* ) exit;;
+                * ) echo "Please answer yes to continue or no to quit.";;
+        esac
 }
 
 checkIfSudo
