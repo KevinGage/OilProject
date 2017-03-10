@@ -11,36 +11,36 @@ checkIfSudo ()
         fi
 }
 
+promptNode6Install()
+{
+	clear
+	read -p "Node version 6 is not installed but is required.  Would you like this script to install it for you? Warning this could replace your current version of nodejs with version 6." yn
+                case $yn in
+                        [Yy]* ) installNode6;;
+                        [Nn]* ) exit;;
+                * ) echo "Please answer yes to attempt to install node or no to quit.";;
+        esac
+}
+
+installNode6 ()
+{
+        #This installs node 6 using apt https://nodejs.org/en/download/package-manager/
+        curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+        apt-get install -y nodejs
+}
+
 checkPrerequisites ()
 {
 	#Make sure apt-get is installed.  This is a half hearted way to make sure the packages can install and the os is debian based.
 	command -v apt-get >/dev/null 2>&1 || { echo >&2 "apt-get was not able to run.  Are you using debian/ubuntu? Aborting."; exit 1; }
 	
-	#Make sure node and npm are installed.  If not this should ask if you want to install.
-	if ! type node > /dev/null;
-	then
-		clear
-		read -p "Node is not installed.  Would you like this script to install it for you?" yn
-        	        case $yn in
-                	        [Yy]* ) installNode6;;
-                        	[Nn]* ) exit;;
-                	* ) echo "Please answer yes to attempt to install node or no to quit.";;
-	        esac
-	fi
+	#Make sure node version 6 and npm are installed.  If not this should ask if you want to install.
+	[[ $(node -v) =~ "v6." ]] || promptNode6Install
 
-	#Make sure node is at least version 6
-	[[ $(node -v) =~ "v6." ]] || { echo >&2 "Node must be at least version 6.  Please update to a newer version of node and try again.  https://nodejs.org/en/download/package-manager/  Aborting."; exit 1; }	
-	
+	#Check for npm just in case	
 	command -v npm >/dev/null 2>&1 || { echo >&2 "Npm is not installed.  Please install the npm package and run setup again.  https://nodejs.org/en/download/package-manager/  Aborting."; exit 1; }
 
 	npm install
-}
-
-installNode6 ()
-{
-	#This installs node 6 using apt https://nodejs.org/en/download/package-manager/
-        curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-        apt-get install -y nodejs
 }
 
 collectInformation ()
@@ -223,4 +223,4 @@ installPackages
 createCronJob
 #create cron job for monthy email
 #send initial email
-installComplete()
+installComplete
