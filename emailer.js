@@ -8,8 +8,15 @@ callback(message, error)
 'use strict';
 const nodemailer = require('nodemailer');
 const config = require('./config.js');
+const generateCharts = require('./generateCharts.js');
 
 exports.sendMessage = function(messageSubject, messageBody, cb) {
+	generateCharts.graphAll(function(err) {
+		if (err) {
+			console.log(err);
+		}
+	});
+
 	let smtpConfig = {
 		host: config.smtpAddress,
 		port: config.smtpPort,
@@ -25,7 +32,13 @@ exports.sendMessage = function(messageSubject, messageBody, cb) {
 		from: config.senderAddress,
 		to: config.recipientAddress,
 		subject: messageSubject,
-		text: messageBody
+		text: messageBody,
+		html: messageBody + '<br /><img src="cid:graph.cid"/>',
+		attachments: [{
+			filename: 'pricegraph.png',
+			path: './allHistory.png',
+			cid: 'graph.cid'
+		}]
 	};
 
 	let transporter = nodemailer.createTransport(smtpConfig);
