@@ -6,10 +6,17 @@ var chartJsOptions = {
 	data: {
 		labels: ["1", "2","3","4"],
 		datasets: [{
-			label: "# of Votes",
+			label: "Oil Price History",
+			fill: true,
+			lineTension: 0.1,
+			backgroundColor: "rgba(54,162,235,0.2)",
+			borderColor: "rgba(54,162,235,0.5)",
+			pointBorderColor: "rgba(75,192,192,1)",
+			pointBackgroundColor: "rgba(75,192,192,0.5)",
+			pointBorderWidth: 2,
+			pointRadius: 5,
 			data: [10,4,14,30],
-			borderColor: "rgba(255,255,255,0.2)",
-			borderWidth: 1
+			spanGaps: false
 		}]
 	},
 	options: {
