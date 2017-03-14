@@ -8,7 +8,7 @@ const ChartjsNode = require('chartjs-node');
 var fs = require('fs');
 
 exports.graphAll = function(cb) {
-	fs.readFile('./priceHistory.js', function (err, data) {
+	fs.readFile('/opt/OilPriceChecker/priceHistory.js', function (err, data) {
 		if (!err) {
 			var priceHistory = JSON.parse(data);
 			var chartJsOptions = {
@@ -47,7 +47,7 @@ function createFullGraph(chartOptions) {
 	return chartNode.drawChart(chartOptions)
 		.then(streamResult => {
 			//write to a file
-			return chartNode.writeImageToFile('image/png', './allHistory.png');
+			return chartNode.writeImageToFile('image/png', '/opt/OilPriceChecker/allHistory.png');
 		})
 		.then(() => {
 			//chart is now written to the file path ./testImage.png

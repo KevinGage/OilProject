@@ -7,8 +7,8 @@ callback(message, error)
 
 'use strict';
 const nodemailer = require('nodemailer');
-const config = require('./config.js');
-const generateCharts = require('./generateCharts.js');
+const config = require('/opt/OilPriceChecker/config.js');
+const generateCharts = require('/opt/OilPriceChecker/generateCharts.js');
 
 exports.sendMessage = function(messageSubject, messageBody, cb) {
 	generateCharts.graphAll(function(err) {
@@ -36,7 +36,7 @@ exports.sendMessage = function(messageSubject, messageBody, cb) {
 		html: messageBody + '<br /><img src="cid:graph.cid"/>',
 		attachments: [{
 			filename: 'pricegraph.png',
-			path: './allHistory.png',
+			path: '/opt/OilPriceChecker/allHistory.png',
 			cid: 'graph.cid'
 		}]
 	};

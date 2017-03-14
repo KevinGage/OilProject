@@ -8,11 +8,11 @@ Requires the request library (npm install request)
 
 var request = require('request');
 var args = process.argv.slice(1);
-var emailer = require('./emailer.js');
-var config = require('./config.js');
+var emailer = require('/opt/OilPriceChecker/emailer.js');
+var config = require('/opt/OilPriceChecker/config.js');
 
 var fs = require('fs');
-var priceHistoryFileName = './priceHistory.js';
+var priceHistoryFileName = '/opt/OilPriceChecker/priceHistory.js';
 
 if (!/^\d{5}/.test(config.zipCode)) {
 	emailError ("Invalid zip code in config file.  " + config.zipCode);
