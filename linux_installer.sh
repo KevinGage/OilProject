@@ -13,7 +13,7 @@ checkIfSudo ()
 
 installLibraries ()
 {
-	apt-get install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build-essential g++
+	apt-get install libcairo2-dev libjpeg-dev libjpeg8-dev libpango1.0-dev libgif-dev build-essential g++
 }
 
 promptNode6Install()
@@ -45,7 +45,7 @@ checkPrerequisites ()
 	#Check for npm just in case	
 	command -v npm >/dev/null 2>&1 || { echo >&2 "Npm is not installed.  Please install the npm package and run setup again.  https://nodejs.org/en/download/package-manager/  Aborting."; exit 1; }
 
-	npm install
+	sudo npm install
 }
 
 collectInformation ()
@@ -141,7 +141,7 @@ createProgramDirectory ()
 {
 	#This function creates the programs install directory in /opt.  Then is secures the directory so only the service account and root can access it.
 	mkdir /opt/OilPriceChecker
-	chown OilService:OilService /opt/OilPriceChecker/
+	chown -R OilService:OilService /opt/OilPriceChecker/
 	chmod 770 /opt/OilPriceChecker/
 }
 
@@ -179,16 +179,16 @@ createEmptyPriceHistory ()
 
 copyProgramFilesToDirectory ()
 {
-	#This just copies the script files to the programs directory.  Then it sets permissions on the files
+	#This just copies the script files to the programs directory.
 	cp ./* /opt/OilPriceChecker/
-	sudo chown -R OilService:OilService /opt/OilPriceChecker/
-	sudo chmod -R 770 /opt/OilPriceChecker/
 }
 
 installPackages ()
 {
 	#This installs the required npm packages
-	cd /opt/OilPriceChecker/ && npm install
+	cd /opt/OilPriceChecker/ && sudo npm install
+	sudo chown -R OilService:OilService /opt/OilPriceChecker/
+        sudo chmod -R 770 /opt/OilPriceChecker/
 }
 
 createCronJob ()
