@@ -171,7 +171,7 @@ createConfigFile ()
 createEmptyPriceHistory ()
 {
 	#This creates a json price history file with blank data in it
-	echo "module.exports = {" > ./priceHistory.js
+	echo "{" > ./priceHistory.js
 	echo "	\"priceHistory\": [0,0,0,0,0,0,0]," >> ./priceHistory.js
 	echo "	\"dateTimes\": [\"$(date "+%m/%d/%Y" -d "6 days ago")\",\"$(date "+%m/%d/%Y" -d "5 days ago")\",\"$(date "+%m/%d/%Y" -d "4 days ago")\",\"$(date "+%m/%d/%Y" -d "3 days ago")\",\"$(date "+%m/%d/%Y" -d "2 days ago")\",\"$(date "+%m/%d/%Y" -d "1 day ago")\",\"$(date "+%m/%d/%Y")\"]" >> ./priceHistory.js
 	echo "}" >> ./priceHistory.js

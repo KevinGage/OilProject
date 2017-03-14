@@ -13,7 +13,6 @@ var config = require('./config.js');
 
 var fs = require('fs');
 var priceHistoryFileName = './priceHistory.js';
-var priceHistory = require(priceHistoryFileName);
 
 if (!/^\d{5}/.test(config.zipCode)) {
 	emailError ("Invalid zip code in config file.  " + config.zipCode);
@@ -28,26 +27,32 @@ request.post(
 		var responseBodyString = JSON.stringify(response);
 			var indexOfPrice = responseBodyString.indexOf('<span class=\\"price\\">');
 			if (indexOfPrice > 0) {
-				var priceSubstring = responseBodyString.substring(indexOfPrice+23,indexOfPrice+28);
-				var priceFloat = parseFloat(priceSubstring);
+				fs.readFile(priceHistoryFileName, function (err, data) {
+					if (!err) {
+						var priceHistory = JSON.parse(data);
 
-				var d = new Date();
-				var shortDate = d.toLocaleDateString();
+						var priceSubstring = responseBodyString.substring(indexOfPrice+23,indexOfPrice+28);
+						var priceFloat = parseFloat(priceSubstring);
 
-				priceHistory.priceHistory.push(priceFloat);
-				priceHistory.dateTimes.push(shortDate);
-				
-				fs.writeFile(priceHistoryFileName, JSON.stringify(priceHistory, null, 2), function(err) {
-					if (err) return console.log(err);
-				});
+						var d = new Date();
+						var shortDate = d.toLocaleDateString();
 
-				if (priceFloat <= config.priceThreshold) {
-					emailer.sendMessage("Low oil price detected", "The current oil price is " + priceSubstring, function (response, error) {
-						if (error != null) {
-							console.log(error); //I should do something better with errors.  maybe an error log or write to system log
+						priceHistory.priceHistory.push(priceFloat);
+						priceHistory.dateTimes.push(shortDate);
+						
+						fs.writeFile(priceHistoryFileName, JSON.stringify(priceHistory, null, 2), function(err) {
+							if (err) return console.log(err);
+						});
+
+						if (priceFloat <= config.priceThreshold) {
+							emailer.sendMessage("Low oil price detected", "The current oil price is " + priceSubstring, function (response, error) {
+								if (error != null) {
+									console.log(error); //I should do something better with errors.  maybe an error log or write to system log
+								}
+							});
 						}
-					});
-				}
+					}
+				});
 			} else {
 				var zipNotServiced = responseBodyString.indexOf('We are not currently servicing zip code ');
 				if (zipNotServiced > 0) {
