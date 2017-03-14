@@ -168,6 +168,15 @@ createConfigFile ()
 	echo "}" >> /opt/OilPriceChecker/config.js
 }
 
+createEmptyPriceHistory ()
+{
+	#This creates a json price history file with blank data in it
+	echo "module.exports = {" > ./priceHistory.js
+	echo "	\"priceHistory\": [0,0,0,0,0,0,0]," >> ./priceHistory.js
+	echo "	\"dateTimes\": [\"$(date "+%m/%d/%y" -d "6 days ago")\",\"$(date "+%m/%d/%y" -d "5 days ago")\",\"$(date "+%m/%d/%y" -d "4 days ago")\",\"$(date "+%m/%d/%y" -d "3 days ago")\",\"$(date "+%m/%d/%y" -d "2 days ago")\",\"$(date "+%m/%d/%y" -d "1 day ago")\",\"$(date "+%m/%d/%y")\"]" >> ./priceHistory.js
+	echo "}" >> ./priceHistory.js
+}
+
 copyProgramFilesToDirectory ()
 {
 	#This just copies the script files to the programs directory.  Then it sets permissions on the files
@@ -232,9 +241,9 @@ verifyInformation
 createServiceAccount
 createProgramDirectory
 createConfigFile
+createEmptyPriceHistory
 copyProgramFilesToDirectory
 installPackages
 createCronJob
 #create cron job for monthy email
-#send initial email
 installComplete
