@@ -8,9 +8,11 @@ Requires the request library (npm install request)
 
 var request = require('request');
 var args = process.argv.slice(1);
-var emailer = require('./emailer.js');
-var config = require('./config.js');
+var emailer = require('/opt/OilPriceChecker/emailer.js');
+var config = require('/opt/OilPriceChecker/config.js');
 
+var fs = require('fs');
+var priceHistoryFileName = '/opt/OilPriceChecker/priceHistory.js';
 
 if (!/^\d{5}/.test(config.zipCode)) {
 	emailError ("Invalid zip code in config file.  " + config.zipCode);
@@ -25,15 +27,32 @@ request.post(
 		var responseBodyString = JSON.stringify(response);
 			var indexOfPrice = responseBodyString.indexOf('<span class=\\"price\\">');
 			if (indexOfPrice > 0) {
-				var priceSubstring = responseBodyString.substring(indexOfPrice+23,indexOfPrice+28);
-				var priceFloat = parseFloat(priceSubstring);
-				if (priceFloat <= config.priceThreshold) {
-					emailer.sendMessage("Low oil price detected", "The current oil price is " + priceSubstring, function (response, error) {
-						if (error != null) {
-							console.log(error); //I should do something better with errors.  maybe an error log or write to system log
+				fs.readFile(priceHistoryFileName, function (err, data) {
+					if (!err) {
+						var priceHistory = JSON.parse(data);
+
+						var priceSubstring = responseBodyString.substring(indexOfPrice+23,indexOfPrice+28);
+						var priceFloat = parseFloat(priceSubstring);
+
+						var d = new Date();
+						var shortDate = d.toLocaleDateString();
+
+						priceHistory.priceHistory.push(priceFloat);
+						priceHistory.dateTimes.push(shortDate);
+						
+						fs.writeFile(priceHistoryFileName, JSON.stringify(priceHistory, null, 2), function(err) {
+							if (err) return console.log(err);
+						});
+
+						if (priceFloat <= config.priceThreshold) {
+							emailer.sendMessage("Low oil price detected", "The current oil price is " + priceSubstring, function (response, error) {
+								if (error != null) {
+									console.log(error); //I should do something better with errors.  maybe an error log or write to system log
+								}
+							});
 						}
-					});
-				}
+					}
+				});
 			} else {
 				var zipNotServiced = responseBodyString.indexOf('We are not currently servicing zip code ');
 				if (zipNotServiced > 0) {

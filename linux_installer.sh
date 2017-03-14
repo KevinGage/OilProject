@@ -11,6 +11,11 @@ checkIfSudo ()
         fi
 }
 
+installLibraries ()
+{
+	apt-get install libcairo2-dev libjpeg-dev libjpeg8-dev libpango1.0-dev libgif-dev build-essential g++
+}
+
 promptNode6Install()
 {
 	clear
@@ -40,7 +45,7 @@ checkPrerequisites ()
 	#Check for npm just in case	
 	command -v npm >/dev/null 2>&1 || { echo >&2 "Npm is not installed.  Please install the npm package and run setup again.  https://nodejs.org/en/download/package-manager/  Aborting."; exit 1; }
 
-	npm install
+	sudo npm install
 }
 
 collectInformation ()
@@ -136,7 +141,7 @@ createProgramDirectory ()
 {
 	#This function creates the programs install directory in /opt.  Then is secures the directory so only the service account and root can access it.
 	mkdir /opt/OilPriceChecker
-	chown OilService:OilService /opt/OilPriceChecker/
+	chown -R OilService:OilService /opt/OilPriceChecker/
 	chmod 770 /opt/OilPriceChecker/
 }
 
@@ -163,18 +168,27 @@ createConfigFile ()
 	echo "}" >> /opt/OilPriceChecker/config.js
 }
 
+createEmptyPriceHistory ()
+{
+	#This creates a json price history file with blank data in it
+	echo "{" > ./priceHistory.js
+	echo "	\"priceHistory\": [0,0,0,0,0,0,0]," >> ./priceHistory.js
+	echo "	\"dateTimes\": [\"$(date "+%m/%d/%Y" -d "6 days ago")\",\"$(date "+%m/%d/%Y" -d "5 days ago")\",\"$(date "+%m/%d/%Y" -d "4 days ago")\",\"$(date "+%m/%d/%Y" -d "3 days ago")\",\"$(date "+%m/%d/%Y" -d "2 days ago")\",\"$(date "+%m/%d/%Y" -d "1 day ago")\",\"$(date "+%m/%d/%Y")\"]" >> ./priceHistory.js
+	echo "}" >> ./priceHistory.js
+}
+
 copyProgramFilesToDirectory ()
 {
-	#This just copies the script files to the programs directory.  Then it sets permissions on the files
+	#This just copies the script files to the programs directory.
 	cp ./* /opt/OilPriceChecker/
-	sudo chown -R OilService:OilService /opt/OilPriceChecker/
-	sudo chmod -R 770 /opt/OilPriceChecker/
 }
 
 installPackages ()
 {
 	#This installs the required npm packages
-	cd /opt/OilPriceChecker/ && npm install
+	cd /opt/OilPriceChecker/ && sudo npm install
+	sudo chown -R OilService:OilService /opt/OilPriceChecker/
+        sudo chmod -R 770 /opt/OilPriceChecker/
 }
 
 createCronJob ()
@@ -220,15 +234,16 @@ installComplete ()
 }
 
 checkIfSudo
+installLibraries
 checkPrerequisites
 collectInformation
 verifyInformation
 createServiceAccount
 createProgramDirectory
 createConfigFile
+createEmptyPriceHistory
 copyProgramFilesToDirectory
 installPackages
 createCronJob
 #create cron job for monthy email
-#send initial email
 installComplete
