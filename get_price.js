@@ -11,6 +11,9 @@ var args = process.argv.slice(1);
 var emailer = require('./emailer.js');
 var config = require('./config.js');
 
+var fs = require('fs');
+var priceHistoryFileName = './priceHistory.js';
+var priceHistory = require(priceHistoryFileName);
 
 if (!/^\d{5}/.test(config.zipCode)) {
 	emailError ("Invalid zip code in config file.  " + config.zipCode);
@@ -27,6 +30,17 @@ request.post(
 			if (indexOfPrice > 0) {
 				var priceSubstring = responseBodyString.substring(indexOfPrice+23,indexOfPrice+28);
 				var priceFloat = parseFloat(priceSubstring);
+
+				var d = new Date();
+				var shortDate = d.toLocaleDateString();
+
+				priceHistory.priceHistory.push(priceFloat);
+				priceHistory.dateTimes.push(shortDate);
+				
+				fs.writeFile(priceHistoryFileName, JSON.stringify(priceHistory, null, 2), function(err) {
+					if (err) return console.log(err);
+				});
+
 				if (priceFloat <= config.priceThreshold) {
 					emailer.sendMessage("Low oil price detected", "The current oil price is " + priceSubstring, function (response, error) {
 						if (error != null) {
