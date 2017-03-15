@@ -13,7 +13,7 @@ checkIfSudo ()
 
 installLibraries ()
 {
-	apt-get install libcairo2-dev libjpeg-dev libjpeg8-dev libpango1.0-dev libgif-dev build-essential g++
+	apt-get install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build-essential g++
 }
 
 promptNode6Install()
