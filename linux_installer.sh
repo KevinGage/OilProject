@@ -86,9 +86,6 @@ collectInformation ()
 	echo "Enter a price.  When the oil price is equal or below this price an email wil be generated. Example 1.99:"
 	read priceThreshold
 	clear
-	echo "How often would you like the price to be checked?  Enter 1 for daily, 2 for weekly, 3 for monthly:"
-	read occuranceCode
-	clear
 	echo "The current time on this machine is $(date)"
 	echo "Enter the time of day to run the price check in 24 hour format.  Example 13:20"
 	read checkTime
@@ -106,7 +103,6 @@ collectInformation ()
 	echo "Sender password: $senderPassword"
 	echo "Recipient email: $recipientAddress"
 	echo "Price thrshold: $priceThreshold"
-	echo "OccuranceCode (1: daily, 2 weekly, 3 monthly): $occuranceCode"
 	echo "Schedule time of day: $checkTime"
 	echo "Zip code: $zipCode"
 
@@ -203,28 +199,22 @@ installPackages ()
 
 createCronJob ()
 {
-	#This sets up a cron job to schedule the check of oil pricing.  if an invalid recurrance code is provided it sets up a daily job.
+	#This sets up a cron job to schedule the check of oil pricing. and the monthly report
 	echo "#" > /etc/cron.d/OilPriceChecker
-	echo "# cron.d/OilPriceChecker -- schedules periodic check of oil prices" >> /etc/cron.d/OilPriceChecker
+	echo "# cron.d/OilPriceChecker -- schedules daily check of oil prices" >> /etc/cron.d/OilPriceChecker
 	echo "#" >> /etc/cron.d/OilPriceChecker
 	echo "" >> /etc/cron.d/OilPriceChecker
 
 	IFS=':'	read -r -a timeOfDayArray <<< "$checkTime"
 
-	case "$occuranceCode" in
-	"1")
-		echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} * * * OilService node /opt/OilPriceChecker/get_price.js >/dev/null 2>&1" >> /etc/cron.d/OilPriceChecker
-		;;
-	"2")
-		echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} * * 6 OilService node /opt/OilPriceChecker/get_price.js >/dev/null 2>&1" >> /etc/cron.d/OilPriceChecker
-		;;
-	"3")
-		echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} 1 * * OilService node /opt/OilPriceChecker/get_price.js >/dev/null 2>&1" >> /etc/cron.d/OilPriceChecker
-		;;
-	*)
-		echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} * * * OilService node /opt/OilPriceChecker/get_price.js >/dev/null 2>&1" >> /etc/cron.d/OilPriceChecker
-		;;
-	esac
+	echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} * * * OilService node /opt/OilPriceChecker/get_price.js >/dev/null 2>&1" >> /etc/cron.d/OilPriceChecker
+        
+	echo "#" > /etc/cron.d/OilPriceMonthlyReport
+        echo "# cron.d/OilPriceMonthlyReport -- schedules monthly report of oil prices" >> /etc/cron.d/OilPriceMonthlyReport
+        echo "#" >> /etc/cron.d/OilPriceMonthlyReport
+        echo "" >> /etc/cron.d/OilPriceMonthlyReport
+
+	echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} 1 * * OilService node -e 'require(\"/opt/OilPriceChecker/emailer.js\").sendMessage(\"Monthly Oil Price Report\", \"\")'" >> /etc/cron.d/OilPriceMonthlyReport
 }
 
 installComplete ()
@@ -255,5 +245,4 @@ createEmptyPriceHistory
 copyProgramFilesToDirectory
 installPackages
 createCronJob
-#create cron job for monthy email
 installComplete
