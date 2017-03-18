@@ -36,6 +36,7 @@ installNode6 ()
 		cd /usr/local
 		tar --strip-components 1 -xf ./node-v6.10.0-linux-armv6l.tar.xz
 		rm ./node-v6.10.0-linux-armv6l.tar.xz
+		cd -
 	else
         	#This installs node 6 using apt https://nodejs.org/en/download/package-manager/
 		curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
