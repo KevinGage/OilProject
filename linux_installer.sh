@@ -208,14 +208,14 @@ createCronJob ()
 
 	IFS=':'	read -r -a timeOfDayArray <<< "$checkTime"
 
-	echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} * * * OilService node /opt/OilPriceChecker/get_price.js >/dev/null 2>&1" >> /etc/cron.d/OilPriceChecker
+	echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} * * * OilService /usr/local/bin/node /opt/OilPriceChecker/get_price.js >/dev/null 2>&1" >> /etc/cron.d/OilPriceChecker
         
 	echo "#" > /etc/cron.d/OilPriceMonthlyReport
         echo "# cron.d/OilPriceMonthlyReport -- schedules monthly report of oil prices" >> /etc/cron.d/OilPriceMonthlyReport
         echo "#" >> /etc/cron.d/OilPriceMonthlyReport
         echo "" >> /etc/cron.d/OilPriceMonthlyReport
 
-	echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} 1 * * OilService node -e 'require(\"/opt/OilPriceChecker/emailer.js\").sendMessage(\"Monthly Oil Price Report\", \"\")'" >> /etc/cron.d/OilPriceMonthlyReport
+	echo "${timeOfDayArray[1]} ${timeOfDayArray[0]} 1 * * OilService /usr/local/bin/node -e 'require(\"/opt/OilPriceChecker/emailer.js\").sendMessage(\"Monthly Oil Price Report\", \"\")'" >> /etc/cron.d/OilPriceMonthlyReport
 }
 
 installComplete ()
