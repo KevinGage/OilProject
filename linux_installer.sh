@@ -32,10 +32,10 @@ installNode6 ()
 	if grep --quiet ARMv6 /proc/cpuinfo; then
   		#This downloads the node binaries for the ARM6 platform
 		wget https://nodejs.org/dist/v6.10.0/node-v6.10.0-linux-armv6l.tar.xz
-		tar -xf ./node-v6.10.0-linux-armv6l.tar.xz
-		cp ./node-v6.10.0-linux-armv6l/bin/* /bin/
+		mv ./node-v6.10.0-linux-armv6l.tar.xz /usr/local/
+		cd /usr/local
+		tar --strip-components 1 -xf ./node-v6.10.0-linux-armv6l.tar.xz
 		rm ./node-v6.10.0-linux-armv6l.tar.xz
-		rm -rf ./node-v6.10.0-linux-armv6l
 	else
         	#This installs node 6 using apt https://nodejs.org/en/download/package-manager/
 		curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
