@@ -186,14 +186,8 @@ createEmptyPriceHistory ()
 
 copyProgramFilesToDirectory ()
 {
-	#This just copies the script files to the programs directory.
-	cp ./* /opt/OilPriceChecker/
-}
-
-installPackages ()
-{
-	#This installs the required npm packages
-	cd /opt/OilPriceChecker/ && sudo npm install
+	#This just copies the script files to the programs directory.  Then resets permissions
+	cp -r ./* /opt/OilPriceChecker/
 	sudo chown -R OilService:OilService /opt/OilPriceChecker/
         sudo chmod -R 770 /opt/OilPriceChecker/
 }
@@ -244,6 +238,5 @@ createProgramDirectory
 createConfigFile
 createEmptyPriceHistory
 copyProgramFilesToDirectory
-installPackages
 createCronJob
 installComplete
